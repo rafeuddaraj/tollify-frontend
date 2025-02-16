@@ -11,7 +11,7 @@ import {
 import { CarIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
 
-export default function VehicleManagement() {
+export default async function VehicleManagement() {
   const vehicles = [
     {
       plate: "ABC123",
