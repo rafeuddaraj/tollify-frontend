@@ -9,10 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { registerAction } from "@/actions";
 import { signIn } from "next-auth/react";
-import { useFormState } from "react-dom";
 
 export default function Register() {
-  const {} = useFormState();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
