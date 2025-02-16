@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 import { CreditCardIcon, LogOutIcon, CarIcon, HistoryIcon } from "lucide-react";
 import ActiveLink from "@/app/(admin)/admin/_components/ActiveLink";
+import Logout from "@/components/common/logout";
 
 export default function AdminLayout({ children }) {
   return (
@@ -53,10 +54,7 @@ export default function AdminLayout({ children }) {
             </SidebarMenu>
           </SidebarContent>
           <div className="mt-auto p-4">
-            <Button variant="outline" className="w-full">
-              <LogOutIcon className="mr-2 h-4 w-4" />
-              Log Out
-            </Button>
+            <Logout />
           </div>
         </Sidebar>
         <main className="flex-1 overflow-y-auto p-8">{children}</main>

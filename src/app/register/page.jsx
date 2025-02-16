@@ -7,22 +7,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import { registerAction } from "@/actions";
+import { signIn } from "next-auth/react";
+import { useFormState } from "react-dom";
 
 export default function Register() {
+  const {} = useFormState();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
+    phoneNumber: "",
     licensePlate: "",
   });
+  const { isLoading, setIsLoading } = useState(false);
+
   const { toast } = useToast();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       toast({
@@ -32,12 +40,27 @@ export default function Register() {
       });
       return;
     }
-    // Here you would typically send the data to your backend
-    console.log("Registration data:", formData);
-    toast({
-      title: "Registration Submitted",
-      description: "Your application is pending approval.",
-    });
+    try {
+      const registerData = await registerAction(formData);
+      if (registerData) {
+        await signIn("credentials", {
+          email: formData.email,
+          password: formData.password,
+          redirectTo: "/dashboard",
+        });
+        return toast({
+          title: "Registration Submitted",
+          description: "Your application is pending approval.",
+        });
+      }
+      throw new Error("");
+    } catch {
+      toast({
+        title: "Registration Failed",
+        description: "Something went wrong.",
+      });
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -63,6 +86,16 @@ export default function Register() {
               />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="phoneNumber">Email</Label>
+              <Input
+                id="phoneNumber"
+                name="phoneNumber"
+                type="number"
+                required
+                onChange={handleChange}
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
@@ -82,16 +115,11 @@ export default function Register() {
                 onChange={handleChange}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="licensePlate">License Plate Number</Label>
-              <Input
-                id="licensePlate"
-                name="licensePlate"
-                required
-                onChange={handleChange}
-              />
-            </div>
-            <Button type="submit" className="w-full">
+            <Button
+              type="submit"
+              className={`w-full ${isLoading ? "animate-pulse" : ""}`}
+              disabled={isLoading}
+            >
               Register
             </Button>
           </form>

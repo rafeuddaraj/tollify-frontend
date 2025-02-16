@@ -7,26 +7,42 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export default function Login() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
-    // Here you would typically send the data to your backend for authentication
-    console.log("Login data:", formData);
-    toast({
-      title: "Login Successful",
-      description: "Welcome back to Tollify!",
-    });
+
+    try {
+      console.log({ formData });
+
+      await signIn("credentials", {
+        ...formData,
+        callbackUrl: "/dashboard",
+      });
+      toast({
+        title: "Login Successful",
+        description: "Welcome back to Tollify!",
+      });
+    } catch {
+      toast({
+        title: "Login Failure",
+        description: "Something went wrong!",
+      });
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -57,7 +73,11 @@ export default function Login() {
                 onChange={handleChange}
               />
             </div>
-            <Button type="submit" className="w-full">
+            <Button
+              type="submit"
+              className={`w-full ${isLoading ? "animate-pulse" : ""}`}
+              disabled={isLoading}
+            >
               Login
             </Button>
           </form>
