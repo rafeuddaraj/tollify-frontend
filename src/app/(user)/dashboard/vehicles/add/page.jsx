@@ -1,40 +1,48 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useToast } from "@/hooks/use-toast"
-import { CarIcon } from "lucide-react"
-import Link from "next/link"
+import { vehicleRegister } from "@/actions";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { CarIcon } from "lucide-react";
+import Link from "next/link";
+import { permanentRedirect } from "next/navigation";
+import { useState } from "react";
 
 export default function AddVehiclePage() {
   const [vehicleData, setVehicleData] = useState({
-    plate: "",
-    make: "",
+    licensePlate: "",
     model: "",
-    year: "",
-  })
-  const { toast } = useToast()
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleChange = (e) => {
-    setVehicleData({ ...vehicleData, [e.target.name]: e.target.value })
-  }
+    setVehicleData({ ...vehicleData, [e.target.name]: e.target.value });
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Here you would typically send the data to your backend
-    console.log("New vehicle data:", vehicleData)
-    toast({
-      title: "Vehicle Added",
-      description: `Your vehicle ${vehicleData.plate} has been added successfully.`,
-    })
-    setVehicleData({ plate: "", make: "", model: "", year: "" })
-  }
+  const handleSubmit = async (e) => {
+    setIsLoading(true);
+    e.preventDefault();
+    const res = await vehicleRegister({ ...vehicleData });
+    if (res) {
+      toast({
+        title: "Vehicle Added",
+        description: `Your vehicle ${vehicleData.licensePlate} has been added successfully.`,
+      });
+      return permanentRedirect("/dashboard/vehicles");
+    }
+    setIsLoading(false);
+    return toast({
+      title: "Vehicle Added Failed!",
+      description: `Something went wrong!`,
+    });
+  };
 
   return (
-    (<div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Add New Vehicle</h1>
         <Button asChild>
@@ -54,19 +62,11 @@ export default function AddVehiclePage() {
               <Label htmlFor="plate">License Plate</Label>
               <Input
                 id="plate"
-                name="plate"
+                name="licensePlate"
                 required
-                value={vehicleData.plate}
-                onChange={handleChange} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="make">Make</Label>
-              <Input
-                id="make"
-                name="make"
-                required
-                value={vehicleData.make}
-                onChange={handleChange} />
+                value={vehicleData.licensePlate}
+                onChange={handleChange}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="model">Model</Label>
@@ -75,25 +75,15 @@ export default function AddVehiclePage() {
                 name="model"
                 required
                 value={vehicleData.model}
-                onChange={handleChange} />
+                onChange={handleChange}
+              />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="year">Year</Label>
-              <Input
-                id="year"
-                name="year"
-                type="number"
-                required
-                value={vehicleData.year}
-                onChange={handleChange} />
-            </div>
-            <Button type="submit" className="w-full">
-              Add Vehicle
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Submitting..." : "Add Vehicle"}
             </Button>
           </form>
         </CardContent>
       </Card>
-    </div>)
+    </div>
   );
 }
-

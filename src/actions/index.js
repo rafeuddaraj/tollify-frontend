@@ -83,14 +83,14 @@ export const getSingleVehicle = async (id) => {
     }
     throw Error("");
   } catch {
-    return [];
+    return {};
   }
 };
 
 export const vehicleRegister = async ({
   ownerId = "",
   licensePlate = "",
-  rfidTag = "",
+  model = "",
 }) => {
   try {
     const session = await auth();
@@ -100,10 +100,13 @@ export const vehicleRegister = async ({
         "content-type": "application/json",
         authorization: `Berar ${session?.user?.accessToken}`,
       },
-      body: JSON.stringify({ ownerId, licensePlate, rfidTag }),
+      body: JSON.stringify({
+        ownerId: ownerId || session?.user?.id,
+        licensePlate,
+        model,
+      }),
     });
     const data = await res.json();
-
     if (data.success) {
       return data;
     }
@@ -135,7 +138,7 @@ export const getAllUser = async () => {
 export const getSingleUser = async (id) => {
   const session = await auth();
   try {
-    const res = await fetch(`${BASE_API_URL}/user/${id}`, {
+    const res = await fetch(`${BASE_API_URL}/user/${id || session?.user?.id}`, {
       method: "GET",
       headers: {
         authorization: `Berar ${session.user.accessToken}`,
@@ -148,7 +151,7 @@ export const getSingleUser = async (id) => {
     }
     throw Error("");
   } catch {
-    return [];
+    return {};
   }
 };
 
@@ -175,5 +178,69 @@ export const RfidScan = async ({
     throw new Error("");
   } catch {
     return null;
+  }
+};
+export const buyCreditAction = async ({
+  amount = "",
+  transactionType = "Uddaraj Pay",
+}) => {
+  try {
+    const session = await auth();
+    const res = await fetch(`${BASE_API_URL}/credit/buy`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Berar ${session?.user?.accessToken}`,
+      },
+      body: JSON.stringify({ amount, transactionType }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      return data;
+    }
+    throw new Error("");
+  } catch {
+    return null;
+  }
+};
+
+export const getTransactionByUser = async () => {
+  const session = await auth();
+  try {
+    const res = await fetch(`${BASE_API_URL}/transaction`, {
+      method: "GET",
+      headers: {
+        authorization: `Berar ${session.user.accessToken}`,
+        "content-type": "application/json",
+      },
+    });
+    const vehicles = await res.json();
+    if (vehicles.success) {
+      return vehicles.data;
+    }
+    throw Error("");
+  } catch {
+    return [];
+  }
+};
+export const getTransactionByUserAndVehicle = async (id) => {
+  const session = await auth();
+  try {
+    const res = await fetch(`${BASE_API_URL}/transaction/${id}`, {
+      method: "GET",
+      headers: {
+        authorization: `Berar ${session.user.accessToken}`,
+        "content-type": "application/json",
+      },
+    });
+    const vehicles = await res.json();
+    if (vehicles.success) {
+      return vehicles.data;
+    }
+    throw Error("");
+  } catch {
+    return [];
   }
 };

@@ -1,5 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getSingleVehicle } from "@/actions";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -11,20 +12,15 @@ import {
 import { CarIcon, CreditCardIcon } from "lucide-react";
 import Link from "next/link";
 
-export default function VehicleSinglePage({ params }) {
+function formatDate(dateString) {
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  return new Intl.DateTimeFormat("en-US", options).format(new Date(dateString));
+}
+
+export default async function VehicleSinglePage({ params }) {
   // In a real application, you would fetch the vehicle data based on the plate
-  const vehicle = {
-    plate: params.plate,
-    make: "Toyota",
-    model: "Camry",
-    year: 2022,
-    owner: "John Doe",
-    balance: 50,
-    recentTransactions: [
-      { id: 1, amount: 5, date: "2023-06-15", location: "Highway 101" },
-      { id: 2, amount: 3, date: "2023-06-12", location: "Bridge Crossing" },
-    ],
-  };
+  const { plate } = await params;
+  const vehicle = await getSingleVehicle(plate);
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
@@ -45,27 +41,23 @@ export default function VehicleSinglePage({ params }) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <p className="font-semibold">License Plate:</p>
-              <p>{vehicle.plate}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Make:</p>
-              <p>{vehicle.make}</p>
+              <p>{vehicle?.licensePlate}</p>
             </div>
             <div>
               <p className="font-semibold">Model:</p>
-              <p>{vehicle.model}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Year:</p>
-              <p>{vehicle.year}</p>
+              <p>{vehicle?.model}</p>
             </div>
             <div>
               <p className="font-semibold">Owner:</p>
-              <p>{vehicle.owner}</p>
+              <p>{vehicle?.owner?.name}</p>
             </div>
             <div>
               <p className="font-semibold">Balance:</p>
-              <p>${vehicle.balance}</p>
+              <p>৳{vehicle?.owner?.creditBalance}</p>
+            </div>
+            <div>
+              <p className="font-semibold">Verify:</p>
+              <p>{vehicle?.rfidTag ? "✅" : "❌"}</p>
             </div>
           </div>
         </CardContent>
@@ -87,13 +79,13 @@ export default function VehicleSinglePage({ params }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {vehicle.recentTransactions.map((transaction) => (
+              {vehicle?.Transactions?.reverse()?.map((transaction) => (
                 <TableRow key={transaction.id}>
                   <TableCell className="text-red-500">
-                    -${transaction.amount}
+                    -৳{transaction.amount}
                   </TableCell>
-                  <TableCell>{transaction.date}</TableCell>
-                  <TableCell>{transaction.location}</TableCell>
+                  <TableCell>{formatDate(transaction.timestamp)}</TableCell>
+                  <TableCell>{transaction.tollLocation}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

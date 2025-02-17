@@ -1,52 +1,56 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useToast } from "@/hooks/use-toast"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog"
-import { CreditCardIcon } from "lucide-react"
+import { buyCreditAction } from "@/actions";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { CreditCardIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-export default function CreditPurchase() {
-  const [amount, setAmount] = useState("")
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const { toast } = useToast()
+export default function CreditPurchasePage() {
+  const [amount, setAmount] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const router = useRouter();
 
-  const handlePurchase = (e) => {
-    e.preventDefault()
-    setIsDialogOpen(true)
-  }
-
-  const confirmPurchase = () => {
-    console.log("Credit purchase:", amount)
-    setIsDialogOpen(false)
-    toast({
-      title: "Purchase Successful",
-      description: `You have added $${amount} to your account.`,
-    })
-    setAmount("")
-  }
+  const handlePurchase = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const resp = await buyCreditAction({ amount: parseFloat(amount) });
+      if (resp) {
+        toast({
+          title: "Purchase Successful",
+          description: `You have added ৳${amount} to your account.`,
+        });
+        return router.push("/dashboard");
+      }
+      throw Error("");
+    } catch (err) {
+      toast({
+        title: "Purchase Failed",
+        description: `There was an problem!`,
+      });
+    }
+    setIsLoading(false);
+  };
 
   return (
-    (<div className="container py-8 mx-auto">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">Purchase Credits</h1>
-      <Card className="max-w-md mx-auto shadow-lg">
-        <CardHeader className="bg-gray-50">
-          <CardTitle className="text-xl text-gray-800 flex items-center gap-2">
+    <div className="mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8 text-gray-800">
+        Purchase Credits
+      </h1>
+      <Card className="w-1/2 mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
             <CreditCardIcon className="h-6 w-6 text-primary" />
             Buy Credits
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-6">
+        <CardContent>
           <form onSubmit={handlePurchase} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="amount">Amount ($)</Label>
@@ -58,29 +62,15 @@ export default function CreditPurchase() {
                 required
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="text-lg" />
+                className="text-lg"
+              />
             </div>
-            <Button type="submit" className="w-full">
-              Purchase
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Purchasing Credits..." : "Purchase Credits"}
             </Button>
           </form>
         </CardContent>
       </Card>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Purchase</DialogTitle>
-            <DialogDescription>Are you sure you want to add ${amount} to your account?</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={confirmPurchase}>Confirm</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>)
+    </div>
   );
 }
-
