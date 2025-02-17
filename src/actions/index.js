@@ -57,7 +57,6 @@ export const getAllVehicle = async () => {
         authorization: `Berar ${session.user.accessToken}`,
         "content-type": "application/json",
       },
-      cache: "force-cache",
     });
     const vehicles = await res.json();
     if (vehicles.success) {
