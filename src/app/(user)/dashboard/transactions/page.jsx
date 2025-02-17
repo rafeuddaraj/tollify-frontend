@@ -1,3 +1,4 @@
+import { getTransactionByUser } from "@/actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -7,34 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { HistoryIcon, CreditCardIcon } from "lucide-react";
+import formatDate from "@/utils/formatedDate";
+import { HistoryIcon } from "lucide-react";
 
-export default function TransactionHistory() {
-  const transactions = [
-    {
-      id: 1,
-      type: "toll",
-      amount: 5,
-      date: "2023-06-15",
-      location: "Highway 101",
-    },
-    { id: 2, type: "credit", amount: 20, date: "2023-06-14" },
-    {
-      id: 3,
-      type: "toll",
-      amount: 3,
-      date: "2023-06-12",
-      location: "Bridge Crossing",
-    },
-    {
-      id: 4,
-      type: "toll",
-      amount: 4,
-      date: "2023-06-10",
-      location: "City Tunnel",
-    },
-    { id: 5, type: "credit", amount: 50, date: "2023-06-08" },
-  ];
+export default async function TransactionHistory() {
+  const transactions = await getTransactionByUser();
 
   return (
     <div className="container mx-auto py-8">
@@ -61,30 +39,18 @@ export default function TransactionHistory() {
             <TableBody>
               {transactions.map((transaction) => (
                 <TableRow key={transaction.id}>
-                  <TableCell>{transaction.date}</TableCell>
+                  <TableCell>{formatDate(transaction.timestamp)}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      {transaction.type === "toll" ? (
-                        <HistoryIcon className="h-5 w-5 text-blue-500" />
-                      ) : (
-                        <CreditCardIcon className="h-5 w-5 text-green-500" />
-                      )}
-                      {transaction.type === "toll"
-                        ? "Toll Payment"
-                        : "Credit Purchase"}
+                      <HistoryIcon className="h-5 w-5 text-blue-500" />
+                      Toll Payment
                     </div>
                   </TableCell>
-                  <TableCell
-                    className={
-                      transaction.type === "toll"
-                        ? "text-red-500"
-                        : "text-green-500"
-                    }
-                  >
-                    {transaction.type === "toll" ? "-" : "+"}$
+                  <TableCell className={"text-red-500"}>
+                    -৳
                     {transaction.amount}
                   </TableCell>
-                  <TableCell>{transaction.location || "N/A"}</TableCell>
+                  <TableCell>{transaction.tollLocation || "N/A"}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

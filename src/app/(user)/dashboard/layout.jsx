@@ -1,17 +1,16 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import ActiveLink from "@/app/(admin)/admin/_components/ActiveLink";
+import Logout from "@/components/common/logout";
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuItem,
   SidebarProvider,
 } from "@/components/ui/sidebar";
-import { CreditCardIcon, LogOutIcon, CarIcon, HistoryIcon } from "lucide-react";
-import ActiveLink from "@/app/(admin)/admin/_components/ActiveLink";
-import Logout from "@/components/common/logout";
+import { CarIcon, CreditCardIcon, HistoryIcon } from "lucide-react";
+import Link from "next/link";
 
 export default function AdminLayout({ children }) {
   return (
@@ -48,6 +47,14 @@ export default function AdminLayout({ children }) {
                   <ActiveLink href="/dashboard/transactions">
                     <HistoryIcon className="mr-2 h-4 w-4" />
                     Total Transactions
+                  </ActiveLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <ActiveLink href="/dashboard/credit-transactions">
+                    <HistoryIcon className="mr-2 h-4 w-4" />
+                    Total Credit Transactions
                   </ActiveLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>

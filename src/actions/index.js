@@ -57,6 +57,7 @@ export const getAllVehicle = async () => {
         authorization: `Berar ${session.user.accessToken}`,
         "content-type": "application/json",
       },
+      cache: "force-cache",
     });
     const vehicles = await res.json();
     if (vehicles.success) {
@@ -229,6 +230,25 @@ export const getTransactionByUserAndVehicle = async (id) => {
   const session = await auth();
   try {
     const res = await fetch(`${BASE_API_URL}/transaction/${id}`, {
+      method: "GET",
+      headers: {
+        authorization: `Berar ${session.user.accessToken}`,
+        "content-type": "application/json",
+      },
+    });
+    const vehicles = await res.json();
+    if (vehicles.success) {
+      return vehicles.data;
+    }
+    throw Error("");
+  } catch {
+    return [];
+  }
+};
+export const getCreditTransaction = async () => {
+  const session = await auth();
+  try {
+    const res = await fetch(`${BASE_API_URL}/credit-transaction`, {
       method: "GET",
       headers: {
         authorization: `Berar ${session.user.accessToken}`,
