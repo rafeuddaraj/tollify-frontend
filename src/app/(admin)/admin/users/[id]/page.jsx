@@ -1,5 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getSingleUser } from "@/actions";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -8,31 +9,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { UserIcon, CarIcon, CreditCardIcon } from "lucide-react";
+import formatDate from "@/utils/formatedDate";
+import { CarIcon, CreditCardIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 
-export default function UserSinglePage({ params }) {
+export default async function UserSinglePage({ params }) {
   // In a real application, you would fetch the user data based on the ID
-  const user = {
-    id: params.id,
-    name: "John Doe",
-    email: "john@example.com",
-    creditBalance: 100,
-    vehicles: [
-      { plate: "ABC123", make: "Toyota", model: "Camry", year: 2022 },
-      { plate: "XYZ789", make: "Honda", model: "Civic", year: 2023 },
-    ],
-    recentTransactions: [
-      {
-        id: 1,
-        type: "toll",
-        amount: 5,
-        date: "2023-06-15",
-        location: "Highway 101",
-      },
-      { id: 2, type: "credit", amount: 20, date: "2023-06-14" },
-    ],
-  };
+  const { id } = await params;
+  const user = await getSingleUser(id);
 
   return (
     <div className="space-y-6">
@@ -78,18 +62,18 @@ export default function UserSinglePage({ params }) {
             <TableHeader>
               <TableRow>
                 <TableHead>License Plate</TableHead>
-                <TableHead>Make</TableHead>
                 <TableHead>Model</TableHead>
-                <TableHead>Year</TableHead>
+                <TableHead>RFID TAG</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {user.vehicles.map((vehicle) => (
-                <TableRow key={vehicle.plate}>
-                  <TableCell className="font-medium">{vehicle.plate}</TableCell>
-                  <TableCell>{vehicle.make}</TableCell>
+                <TableRow key={vehicle.licensePlate}>
+                  <TableCell className="font-medium">
+                    {vehicle.licensePlate}
+                  </TableCell>
                   <TableCell>{vehicle.model}</TableCell>
-                  <TableCell>{vehicle.year}</TableCell>
+                  <TableCell>{vehicle.rfidTag || "N/A"}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -100,7 +84,7 @@ export default function UserSinglePage({ params }) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CreditCardIcon className="h-6 w-6 text-primary" />
-            Recent Transactions
+            Recent Credit Transactions
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -114,27 +98,54 @@ export default function UserSinglePage({ params }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {user.recentTransactions.map((transaction) => (
-                <TableRow key={transaction.id}>
-                  <TableCell>
-                    {transaction.type === "toll"
-                      ? "Toll Payment"
-                      : "Credit Purchase"}
-                  </TableCell>
-                  <TableCell
-                    className={
-                      transaction.type === "toll"
-                        ? "text-red-500"
-                        : "text-green-500"
-                    }
-                  >
-                    {transaction.type === "toll" ? "-" : "+"}$
-                    {transaction.amount}
-                  </TableCell>
-                  <TableCell>{transaction.date}</TableCell>
-                  <TableCell>{transaction.location || "N/A"}</TableCell>
-                </TableRow>
-              ))}
+              {user.Credits.reverse()
+                .slice(0, 3)
+                .map((transaction) => (
+                  <TableRow key={transaction.id}>
+                    <TableCell>Credit Purchase</TableCell>
+                    <TableCell className="text-green-500">
+                      +{transaction?.amount}
+                    </TableCell>
+                    <TableCell>{formatDate(transaction?.timestamp)}</TableCell>
+                    <TableCell>
+                      {transaction?.transactionType || "N/A"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CreditCardIcon className="h-6 w-6 text-primary" />
+            Recent Toll Transactions
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Type</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Details</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {user.Transactions.reverse()
+                .slice(0, 3)
+                .map((transaction) => (
+                  <TableRow key={transaction.id}>
+                    <TableCell>Credit Purchase</TableCell>
+                    <TableCell className="text-red-500">
+                      -{transaction?.amount}
+                    </TableCell>
+                    <TableCell>{formatDate(transaction?.timestamp)}</TableCell>
+                    <TableCell>{transaction?.tollLocation || "N/A"}</TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </CardContent>

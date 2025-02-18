@@ -1,23 +1,22 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import Logout from "@/components/common/logout";
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuItem,
   SidebarProvider,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
+  ClipboardListIcon,
+  CreditCardIcon,
   HomeIcon,
   UsersIcon,
-  CreditCardIcon,
-  ClipboardListIcon,
-  LogOutIcon,
 } from "lucide-react";
+import Link from "next/link";
 import ActiveLink from "./_components/ActiveLink";
-import Logout from "@/components/common/logout";
 
 export default function AdminLayout({ children }) {
   return (
@@ -71,7 +70,10 @@ export default function AdminLayout({ children }) {
             <Logout />
           </div>
         </Sidebar>
-        <main className="flex-1 overflow-y-auto p-8">{children}</main>
+        <main className="flex-1 overflow-y-auto p-8">
+          <SidebarTrigger />
+          {children}
+        </main>
       </SidebarProvider>
     </div>
   );

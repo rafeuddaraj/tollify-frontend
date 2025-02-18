@@ -9,9 +9,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import formatDate from "@/utils/formatedDate";
 import { CarIcon, CreditCardIcon } from "lucide-react";
 import Link from "next/link";
+
+function formatDate(dateString) {
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  return new Intl.DateTimeFormat("en-US", options).format(new Date(dateString));
+}
 
 export default async function VehicleSinglePage({ params }) {
   // In a real application, you would fetch the vehicle data based on the plate

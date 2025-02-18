@@ -8,6 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarTrigger
 } from "@/components/ui/sidebar";
 import { CarIcon, CreditCardIcon, HistoryIcon } from "lucide-react";
 import Link from "next/link";
@@ -52,7 +53,7 @@ export default function AdminLayout({ children }) {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <ActiveLink href="/dashboard/credit-transactions">
+                  <ActiveLink href="/dashboard/credit-transaction">
                     <HistoryIcon className="mr-2 h-4 w-4" />
                     Total Credit Transactions
                   </ActiveLink>
@@ -64,7 +65,10 @@ export default function AdminLayout({ children }) {
             <Logout />
           </div>
         </Sidebar>
-        <main className="flex-1 overflow-y-auto p-8">{children}</main>
+        <main className="flex-1 overflow-y-auto p-8">
+          <SidebarTrigger />
+          {children}
+        </main>
       </SidebarProvider>
     </div>
   );

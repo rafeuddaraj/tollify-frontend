@@ -11,38 +11,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { UserIcon } from "lucide-react";
 import Link from "next/link";
+import { getAllUser } from "@/actions";
 
-export default function AdminUserManagement() {
-  const users = [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      vehicles: 2,
-      creditBalance: 50,
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane@example.com",
-      vehicles: 1,
-      creditBalance: 30,
-    },
-    {
-      id: 3,
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      vehicles: 3,
-      creditBalance: 75,
-    },
-    {
-      id: 4,
-      name: "Bob Williams",
-      email: "bob@example.com",
-      vehicles: 1,
-      creditBalance: 15,
-    },
-  ];
+export default async function AdminUserManagement() {
+  const users = await getAllUser()
 
   return (
     <div className="container mx-auto">
