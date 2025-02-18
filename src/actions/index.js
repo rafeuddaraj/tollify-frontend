@@ -1,6 +1,8 @@
 "use server";
 
 import { auth } from "@/auth";
+import { revalidateTag } from "next/cache";
+import { ALL_VEHICLE_REVALIDATE } from "./actions";
 
 const BASE_API_URL = process.env.BASE_API_URL;
 
@@ -57,6 +59,7 @@ export const getAllVehicle = async () => {
         authorization: `Berar ${session.user.accessToken}`,
         "content-type": "application/json",
       },
+      next: { tags: [ALL_VEHICLE_REVALIDATE] },
     });
     const vehicles = await res.json();
     if (vehicles.success) {
@@ -261,5 +264,29 @@ export const getCreditTransaction = async () => {
     throw Error("");
   } catch {
     return [];
+  }
+};
+
+export const updateVehicleAction = async (id, body) => {
+  const session = await auth();
+  try {
+    const res = await fetch(`${BASE_API_URL}/vehicle/${id}`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Barer ${session?.user?.accessToken}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      revalidateTag(ALL_VEHICLE_REVALIDATE);
+      return data;
+    }
+    throw new Error("");
+  } catch {
+    return null;
   }
 };

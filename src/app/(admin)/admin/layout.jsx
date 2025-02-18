@@ -13,6 +13,7 @@ import {
   ClipboardListIcon,
   CreditCardIcon,
   HomeIcon,
+  SignalHigh,
   UsersIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -50,9 +51,17 @@ export default function AdminLayout({ children }) {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <ActiveLink href="/admin/transactions">
+                  <ActiveLink href="/admin/toll-transactions">
                     <CreditCardIcon className="mr-2 h-4 w-4" />
-                    Transactions
+                    Toll Transactions
+                  </ActiveLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <ActiveLink href="/admin/credit-transactions">
+                    <CreditCardIcon className="mr-2 h-4 w-4" />
+                    Credit Transactions
                   </ActiveLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -61,6 +70,14 @@ export default function AdminLayout({ children }) {
                   <ActiveLink href="/admin/applications">
                     <ClipboardListIcon className="mr-2 h-4 w-4" />
                     Applications
+                  </ActiveLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <ActiveLink href="/admin/rfid-simulator">
+                    <SignalHigh className="mr-2 h-4 w-4" />
+                    RFID Simulator
                   </ActiveLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>

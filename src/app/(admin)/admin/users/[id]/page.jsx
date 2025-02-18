@@ -74,6 +74,13 @@ export default async function UserSinglePage({ params }) {
                   </TableCell>
                   <TableCell>{vehicle.model}</TableCell>
                   <TableCell>{vehicle.rfidTag || "N/A"}</TableCell>
+                  <TableCell>
+                    <Button>
+                      <Link href={`/admin/users/${id}/${vehicle?.id}`}>
+                        Visit
+                      </Link>
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -1,7 +1,4 @@
-"use client";
-
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { getAllVehicle } from "@/actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -11,64 +8,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+import formatDate from "@/utils/formatedDate";
 import { ClipboardListIcon } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import ActionTable from "./_components/ActionTable";
 
-export default function AdminApplicationManagement() {
-  const [applications, setApplications] = useState([
-    {
-      id: 1,
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      licensePlate: "DEF456",
-      dateApplied: "2023-06-16",
-      status: "Pending",
-    },
-    {
-      id: 2,
-      name: "Bob Williams",
-      email: "bob@example.com",
-      licensePlate: "GHI789",
-      dateApplied: "2023-06-15",
-      status: "Pending",
-    },
-    {
-      id: 3,
-      name: "Charlie Brown",
-      email: "charlie@example.com",
-      licensePlate: "JKL012",
-      dateApplied: "2023-06-14",
-      status: "Pending",
-    },
-  ]);
+export default async function AdminApplicationManagement() {
+  const vehicles = await getAllVehicle();
 
-  const { toast } = useToast();
-
-  const handleApprove = (id) => {
-    setApplications(
-      applications.map((app) =>
-        app.id === id ? { ...app, status: "Approved" } : app
-      )
-    );
-    toast({
-      title: "Application Approved",
-      description: "The user application has been approved.",
-    });
-  };
-
-  const handleReject = (id) => {
-    setApplications(
-      applications.map((app) =>
-        app.id === id ? { ...app, status: "Rejected" } : app
-      )
-    );
-    toast({
-      title: "Application Rejected",
-      description: "The user application has been rejected.",
-      variant: "destructive",
-    });
-  };
+  const applications = vehicles?.filter((vehicle) => vehicle?.rfidTag === null);
 
   return (
     <div className="container mx-auto">
@@ -83,9 +30,14 @@ export default function AdminApplicationManagement() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="mb-4">
-            <Input placeholder="Search applications..." className="max-w-sm" />
-          </div>
+          {/* <div className="mb-4">
+            <Input
+              value={rfidTag}
+              onChange={(e) => setRfidTag(e.target.value)}
+              placeholder="Search applications..."
+              className="max-w-sm"
+            />
+          </div> */}
           <Table>
             <TableHeader>
               <TableRow>
@@ -94,6 +46,7 @@ export default function AdminApplicationManagement() {
                 <TableHead>License Plate</TableHead>
                 <TableHead>Date Applied</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>RFID TAG</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -101,33 +54,13 @@ export default function AdminApplicationManagement() {
               {applications.map((application) => (
                 <TableRow key={application.id}>
                   <TableCell className="font-medium">
-                    {application.name}
+                    {application?.owner?.name}
                   </TableCell>
-                  <TableCell>{application.email}</TableCell>
+                  <TableCell>{application.owner?.email}</TableCell>
                   <TableCell>{application.licensePlate}</TableCell>
-                  <TableCell>{application.dateApplied}</TableCell>
-                  <TableCell>{application.status}</TableCell>
-                  <TableCell>
-                    {application.status === "Pending" && (
-                      <>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="mr-2"
-                          onClick={() => handleApprove(application.id)}
-                        >
-                          Approve
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleReject(application.id)}
-                        >
-                          Reject
-                        </Button>
-                      </>
-                    )}
-                  </TableCell>
+                  <TableCell>{formatDate(application.createdAt)}</TableCell>
+                  <TableCell>Pending</TableCell>
+                  <ActionTable application={application}/>
                 </TableRow>
               ))}
             </TableBody>
