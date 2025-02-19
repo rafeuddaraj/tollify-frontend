@@ -1,5 +1,7 @@
+import { getAllUser } from "@/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -8,10 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { UserIcon } from "lucide-react";
 import Link from "next/link";
-import { getAllUser } from "@/actions";
 
 export default async function AdminUserManagement() {
   const users = await getAllUser()
@@ -46,7 +46,7 @@ export default async function AdminUserManagement() {
                   <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.vehicles}</TableCell>
-                  <TableCell>${user.creditBalance}</TableCell>
+                  <TableCell>৳{user.creditBalance}</TableCell>
                   <TableCell>
                     <Button variant="outline" size="sm" asChild>
                       <Link href={`/admin/users/${user.id}`}>View Details</Link>

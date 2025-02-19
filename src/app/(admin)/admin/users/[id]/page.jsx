@@ -45,7 +45,7 @@ export default async function UserSinglePage({ params }) {
             </div>
             <div>
               <p className="font-semibold">Credit Balance:</p>
-              <p>${user.creditBalance}</p>
+              <p>৳{user.creditBalance}</p>
             </div>
           </div>
         </CardContent>
